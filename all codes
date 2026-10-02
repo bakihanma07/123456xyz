@@ -1,4 +1,3 @@
-Practical-7
 
 GemSpawnManager.cs
 using UnityEngine;
@@ -51,7 +50,7 @@ public class GemSpawnManager : MonoBehaviour
 
 
 
-Practical-8
+
 
 MainMenuManager.cs
 
@@ -85,6 +84,9 @@ public class GemCounterUI : MonoBehaviour
         counterText.text = "Gems: " + collected + "/" + total;
     }
 }
+
+
+
 GemCollectionManager.cs
 
 using UnityEngine;
@@ -158,7 +160,6 @@ public class GemCollectionManager : MonoBehaviour
 
 
 
-Practical-9
 DoorTrigger.cs
 
 using UnityEngine;
@@ -175,6 +176,8 @@ public class DoorTrigger : MonoBehaviour
         }
     }
 }
+
+
 
 DoorController.cs
 
@@ -240,6 +243,8 @@ public class ExitTrigger : MonoBehaviour
         gameCompletionUI.SetActive(true);
     }
 }
+
+
 
 GameCompleteManager.cs
 
