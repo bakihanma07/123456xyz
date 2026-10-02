@@ -1,0 +1,260 @@
+Practical-7
+
+GemSpawnManager.cs
+using UnityEngine;
+
+public class GemSpawnManager : MonoBehaviour
+{
+    public GameObject[] Gems;
+    public Transform[] SpawnPoints;
+
+    void Start()
+    {
+        SpawnGems();
+    }
+
+    void SpawnGems()
+    {
+        // Create a list of available spawn points
+        System.Collections.Generic.List<Transform> availablePoints =
+            new System.Collections.Generic.List<Transform>(SpawnPoints);
+
+        for (int i = 0; i < Gems.Length; i++)
+        {
+            // Pick a random spawn point
+            int randomIndex = Random.Range(0, availablePoints.Count);
+
+            Transform selectedPoint = availablePoints[randomIndex];
+
+            // Move the gem to that point
+            Gems[i].transform.position = selectedPoint.position;
+            Gems[i].transform.rotation = selectedPoint.rotation;
+
+            // Make sure the gem is active
+            Gems[i].SetActive(true);
+
+            // Remove the selected point so another gem can't use it
+            availablePoints.RemoveAt(randomIndex);
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+Practical-8
+
+MainMenuManager.cs
+
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class MainMenuManager : MonoBehaviour
+{
+    public void StartGame()
+    {
+        SceneManager.LoadScene("Puzzle_Room");
+    }
+
+    public void ExitGame()
+    {
+        Application.Quit();
+    }
+}
+
+GemCounterUI.cs
+
+using TMPro;
+using UnityEngine;
+
+public class GemCounterUI : MonoBehaviour
+{
+    public TextMeshProUGUI counterText;
+
+    public void UpdateCounter(int collected, int total)
+    {
+        counterText.text = "Gems: " + collected + "/" + total;
+    }
+}
+GemCollectionManager.cs
+
+using UnityEngine;
+
+public class GemCollectionManager : MonoBehaviour
+{
+    public int totalGems = 3;
+    public int collectedGems = 0;
+
+    public GemCounterUI counterUI;
+    public DoorController doorController;
+
+    void Start()
+    {
+        UpdateUI();
+    }
+
+    public void GemPlaced()
+    {
+        collectedGems++;
+
+        if (collectedGems > totalGems)
+        {
+            collectedGems = totalGems;
+        }
+
+        UpdateUI();
+
+        if (collectedGems == totalGems)
+        {
+            doorController.OpenDoors();
+        }
+    }
+
+    public void GemRemoved()
+    {
+        collectedGems--;
+
+        if (collectedGems < 0)
+        {
+            collectedGems = 0;
+        }
+
+        UpdateUI();
+    }
+
+    void UpdateUI()
+    {
+        counterUI.UpdateCounter(collectedGems, totalGems);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Practical-9
+DoorTrigger.cs
+
+using UnityEngine;
+
+public class DoorTrigger : MonoBehaviour
+{
+    public DoorController door;
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            door.OpenDoors();
+        }
+    }
+}
+
+DoorController.cs
+
+using UnityEngine;
+
+public class DoorController : MonoBehaviour
+{
+    public Transform leftDoor;
+    public Transform rightDoor;
+    public Camera cutsceneCamera;
+
+    bool open = false;
+    float timer = 0;
+
+    void Start()
+    {
+        cutsceneCamera.enabled = false;
+    }
+
+    void Update()
+    {
+        if (open)
+        {
+            timer += Time.deltaTime;
+
+            leftDoor.localRotation = Quaternion.Lerp(
+                leftDoor.localRotation,
+                Quaternion.Euler(0, -90, 0),
+                Time.deltaTime * 2
+            );
+
+            rightDoor.localRotation = Quaternion.Lerp(
+                rightDoor.localRotation,
+                Quaternion.Euler(0, 90, 0),
+                Time.deltaTime * 2
+            );
+
+            if (timer >= 3)
+            {
+                cutsceneCamera.enabled = false;
+            }
+        }
+    }
+
+    public void OpenDoors()
+    {
+        cutsceneCamera.enabled = true;
+        open = true;
+    }
+}
+
+
+ExitTrigger.cs
+
+using UnityEngine;
+
+public class ExitTrigger : MonoBehaviour
+{
+    public GameObject gameCompletionUI;
+
+    private void OnTriggerEnter(Collider other)
+    {
+        gameCompletionUI.SetActive(true);
+    }
+}
+
+GameCompleteManager.cs
+
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class GameCompleteManager : MonoBehaviour
+{
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void ExitGame()
+    {
+        Application.Quit();
+    }
+}
